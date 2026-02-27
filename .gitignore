@@ -1,0 +1,44 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Env files
+*.local
+.env
+.env.*
+!.env.example
+
+# Root tooling
+.elixir-tools/
+
+# Frontend (app)
+app/node_modules/
+app/dist/
+app/dist-ssr/
+
+# Backend (api/nova_control)
+api/nova_control/_build/
+api/nova_control/cover/
+api/nova_control/deps/
+api/nova_control/doc/
+api/nova_control/tmp/
+api/nova_control/.fetch
+api/nova_control/erl_crash.dump
+api/nova_control/*.ez
+api/nova_control/nova_control-*.tar
