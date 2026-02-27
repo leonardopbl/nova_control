@@ -40,5 +40,6 @@ defmodule NovaControlWeb.Router do
     pipe_through(:api)
 
     post("/signup", AuthController, :signup)
+    post("/login", SessionController, :login)
   end
 end
