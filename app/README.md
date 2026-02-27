@@ -1,5 +1,29 @@
-# Vue 3 + TypeScript + Vite
+# NovaControl Frontend
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Frontend do projeto NovaControl, construido com Vue 3, TypeScript, Vite e Vuetify.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Requisitos
+
+- Node.js 20+
+- pnpm
+
+## Rodando em desenvolvimento
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Aplicacao disponivel em `http://localhost:5173`.
+
+## Scripts
+
+- `pnpm dev`: sobe o servidor de desenvolvimento
+- `pnpm build`: gera build de producao
+- `pnpm preview`: executa preview da build local
+
+## Estado atual
+
+- Interface com drawer lateral e visualizacao de despesas por ano/mes.
+- Tabela de despesas ainda utiliza dados mockados em `src/App.vue`.
+- Integracao com a API sera o proximo passo.
