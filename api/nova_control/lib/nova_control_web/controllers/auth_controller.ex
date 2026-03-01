@@ -4,24 +4,15 @@ defmodule NovaControlWeb.AuthController do
   alias Ecto.Changeset
   alias NovaControl.Accounts
 
+  action_fallback(NovaControlWeb.FallbackController)
+
   def signup(conn, %{"user" => user_attrs, "password" => password}) do
-    case Accounts.create_user(user_attrs, password) do
-      {:ok, _result} ->
-        conn
-        |> put_status(:created)
-        |> json(%{
-          message: "User created successfully"
-        })
-
-      {:error, :invalid_user, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "Invalid user data", details: errors(changeset)})
-
-      {:error, :invalid_register, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "Invalid auth data", details: errors(changeset)})
+    with {:ok, user} <- Accounts.create_user(user_attrs, password) do
+      conn
+      |> put_status(:created)
+      |> json(%{
+        message: "User created successfully"
+      })
     end
   end
 
@@ -29,9 +20,5 @@ defmodule NovaControlWeb.AuthController do
     conn
     |> put_status(:unprocessable_entity)
     |> json(%{error: "Invalid payload. Expected user object and password"})
-  end
-
-  defp errors(changeset) do
-    Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
   end
 end

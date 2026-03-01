@@ -5,36 +5,17 @@ defmodule NovaControlWeb.SessionController do
   alias NovaControl.Accounts
   alias NovaControl.Auth.{LoginParams, Guardian}
 
+  action_fallback(NovaControlWeb.FallbackController)
+
   def login(conn, params) do
-    case LoginParams.changeset(params)
-         |> Changeset.apply_action(:validate) do
-      {:ok, data} ->
-        case Accounts.authenticate_user(data.email, data.password) do
-          {:ok, user} ->
-            {:ok, token, _claims} = Guardian.encode_and_sign(user)
-
-            conn
-            |> put_status(:ok)
-            |> json(%{
-              message: "Login successful",
-              user: user,
-              access_token: token
-            })
-
-          {:error, :invalid_credentials} ->
-            conn
-            |> put_status(:unauthorized)
-            |> json(%{error: "Invalid email or password"})
-        end
-
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "Invalid login data", details: errors(changeset)})
+    with {:ok, data} <-
+           LoginParams.changeset(params)
+           |> Changeset.apply_action(:validate),
+         {:ok, user} <- Accounts.authenticate_user(data.email, data.password),
+         {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
+      conn
+      |> put_status(:ok)
+      |> render(:show, user: user, access_token: token)
     end
-  end
-
-  defp errors(changeset) do
-    Changeset.traverse_errors(changeset, fn {msg, _opt} -> msg end)
   end
 end
