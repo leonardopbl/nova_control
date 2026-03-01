@@ -1,46 +1,24 @@
 defmodule NovaControlWeb.AuthController do
   use NovaControlWeb, :controller
 
-  alias Ecto.Multi
-  alias NovaControl.{Repo, User, Register}
+  alias Ecto.Changeset
+  alias NovaControl.Accounts
 
-  def signup(conn, %{"user" => user_attrs, "password" => password})
-      when is_map(user_attrs) and is_binary(password) do
-    multi =
-      Multi.new()
-      |> Multi.insert(:user, User.changeset(%User{}, user_attrs))
-      |> Multi.insert(:register, fn %{user: user} ->
-        Register.changeset(%Register{}, %{
-          "user_id" => user.id,
-          "email" => user.email,
-          "password" => password,
-          "provider" => "password"
-        })
-      end)
-
-    case Repo.transaction(multi) do
-      {:ok, %{user: user, register: register}} ->
+  def signup(conn, %{"user" => user_attrs, "password" => password}) do
+    case Accounts.create_user(user_attrs, password) do
+      {:ok, _result} ->
         conn
         |> put_status(:created)
         |> json(%{
-          data: %{
-            user: user,
-            register: %{
-              id: register.id,
-              user_id: register.user_id,
-              email: register.email,
-              provider: register.provider,
-              inserted_at: register.inserted_at
-            }
-          }
+          message: "User created successfully"
         })
 
-      {:error, :user, changeset, _} ->
+      {:error, :invalid_user, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{error: "Invalid user data", details: errors(changeset)})
 
-      {:error, :register, changeset, _} ->
+      {:error, :invalid_register, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{error: "Invalid auth data", details: errors(changeset)})
@@ -54,6 +32,6 @@ defmodule NovaControlWeb.AuthController do
   end
 
   defp errors(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
+    Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
   end
 end

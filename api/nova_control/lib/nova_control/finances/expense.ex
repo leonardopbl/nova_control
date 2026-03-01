@@ -1,4 +1,4 @@
-defmodule NovaControl.Expense do
+defmodule NovaControl.Finances.Expense do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -13,7 +13,7 @@ defmodule NovaControl.Expense do
     field(:due_date, :date)
     field(:payment_date, :date)
 
-    belongs_to(:user, NovaControl.User)
+    belongs_to(:user, NovaControl.Accounts.User)
 
     timestamps()
   end

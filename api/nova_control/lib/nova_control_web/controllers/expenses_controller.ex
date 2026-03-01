@@ -1,71 +1,63 @@
 defmodule NovaControlWeb.ExpensesController do
   use NovaControlWeb, :controller
 
-  alias NovaControl.Expense
-  alias NovaControl.Repo
+  alias Ecto.Changeset
+  alias NovaControl.Finances.Expenses
 
   def index(conn, _params) do
     conn
     |> put_status(:ok)
-    |> json(%{data: Repo.all(Expense)})
+    |> json(%{data: Expenses.list_expenses()})
   end
 
-  def create(conn, params) do
-    case %Expense{}
-         |> Expense.changeset(expense_params(params))
-         |> Repo.insert() do
+  def create(conn, %{"expense" => attrs}) do
+    case Expenses.create_expense(attrs) do
       {:ok, expense} ->
         conn
         |> put_status(:created)
-        |> json(%{message: "Expense created successfully", data: expense})
+        |> json(%{message: "Expense create successfully", data: expense})
 
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{
           error: "Invalid data",
-          details: Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
+          details: errors(changeset)
         })
     end
   end
 
-  def update(conn, %{"id" => id} = params) do
-    case Repo.get(Expense, id) do
-      nil ->
+  def update(conn, %{"id" => id, "expense" => attrs}) do
+    case Expenses.update_expense(id, attrs) do
+      {:ok, expense} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{message: "Expense updated successfully", data: expense})
+
+      {:error, :not_found} ->
         conn
         |> put_status(:not_found)
         |> json(%{error: "Expense not found"})
 
-      expense ->
-        attrs = expense_params(params)
+      {:error, :no_valid_fields} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          error: "Invalid data",
+          details: %{params: ["No valid fields provided for update"]}
+        })
 
-        if map_size(attrs) == 0 do
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{
-            error: "Invalid data",
-            details: %{params: ["No valid fields provided for update"]}
-          })
-        else
-          case expense
-               |> Expense.changeset(attrs)
-               |> Repo.update() do
-            {:ok, updated_expense} ->
-              conn
-              |> put_status(:ok)
-              |> json(%{message: "Expense updated successfully", data: updated_expense})
-
-            {:error, changeset} ->
-              conn
-              |> put_status(:unprocessable_entity)
-              |> json(%{
-                error: "Invalid data",
-                details: Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
-              })
-          end
-        end
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          error: "Invalid data",
+          details: errors(changeset)
+        })
     end
   end
 
-  defp expense_params(%{"expense" => attrs}) when is_map(attrs), do: attrs
+  defp errors(changeset) do
+    Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
+  end
 end

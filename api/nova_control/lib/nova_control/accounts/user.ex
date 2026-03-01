@@ -1,4 +1,4 @@
-defmodule NovaControl.User do
+defmodule NovaControl.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -13,7 +13,7 @@ defmodule NovaControl.User do
     field(:phone, :string)
     field(:birth_date, :date)
 
-    has_many(:expenses, NovaControl.Expense)
+    has_many(:expenses, NovaControl.Finances.Expense)
 
     timestamps()
   end

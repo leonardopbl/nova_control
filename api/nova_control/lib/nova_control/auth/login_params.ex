@@ -1,4 +1,4 @@
-defmodule NovaControl.LoginParams do
+defmodule NovaControl.Auth.LoginParams do
   use Ecto.Schema
   import Ecto.Changeset
 

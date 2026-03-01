@@ -1,93 +1,60 @@
 defmodule NovaControlWeb.UsersController do
   use NovaControlWeb, :controller
 
-  alias NovaControl.Repo
-  alias NovaControl.User
-
-  @user_fields ["name", "email", "phone", "birth_date"]
+  alias Ecto.Changeset
+  alias NovaControl.Accounts
 
   def index(conn, _params) do
     conn
     |> put_status(:ok)
-    |> json(%{data: Repo.all(User)})
+    |> json(%{data: Accounts.list_users()})
   end
 
-  def create(conn, params) do
-    case %User{}
-         |> User.changeset(user_params(params))
-         |> Repo.insert() do
+  def update(conn, %{"id" => id, "user" => user_attrs}) do
+    case Accounts.update_user(id, user_attrs) do
       {:ok, user} ->
         conn
-        |> put_status(:created)
+        |> put_status(:ok)
         |> json(%{data: user})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "User not found"})
+
+      {:error, :no_valid_fields} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          error: "Invalid data",
+          details: %{params: ["No valid fields provided for update"]}
+        })
 
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{
           error: "Invalid data",
-          details: Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
+          details: errors(changeset)
         })
     end
   end
 
-  def update(conn, %{"id" => id} = params) do
-    case Repo.get(User, id) do
-      nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "User not found"})
-
-      user ->
-        attrs = user_params(params)
-
-        if map_size(attrs) == 0 do
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{
-            error: "Invalid data",
-            details: %{params: ["No valid fields provided for update"]}
-          })
-        else
-          case user
-               |> User.changeset(attrs)
-               |> Repo.update() do
-            {:ok, updated_user} ->
-              conn
-              |> put_status(:ok)
-              |> json(%{data: updated_user})
-
-            {:error, changeset} ->
-              conn
-              |> put_status(:unprocessable_entity)
-              |> json(%{
-                error: "Invalid data",
-                details: Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
-              })
-          end
-        end
-    end
-  end
-
   def delete(conn, %{"id" => id}) do
-    case Repo.get(User, id) do
-      nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "User not found"})
-
-      user ->
-        Repo.delete(user)
-
+    case Accounts.delete_user(id) do
+      {:ok, _user} ->
         conn
         |> put_status(:no_content)
-        |> send_resp(:no_content, "")
+        |> json(%{message: "User deleted successfully"})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "User not found"})
     end
   end
 
-  # so aceita dados no formato { "user": { "name": "John", "email": "
-  defp user_params(%{"user" => attrs}) when is_map(attrs), do: Map.take(attrs, @user_fields)
-  defp user_params(attrs) when is_map(attrs), do: Map.take(attrs, @user_fields)
-
-  # defp user_params(attrs) when is_map(attrs), do: attrs // aceita dados no formato raiz, sem a chave "user"
+  defp errors(changeset) do
+    Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
+  end
 end

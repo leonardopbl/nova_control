@@ -1,4 +1,4 @@
-defmodule NovaControl.Register do
+defmodule NovaControl.Accounts.Register do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -35,7 +35,7 @@ defmodule NovaControl.Register do
     field(:last_login_at, :date)
     field(:confirmed_at, :date)
 
-    belongs_to(:user, NovaControl.User)
+    belongs_to(:user, NovaControl.Accounts.User)
 
     timestamps()
   end

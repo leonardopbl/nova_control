@@ -52,7 +52,8 @@ defmodule NovaControl.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:bcrypt_elixir, "~> 3.3"}
+      {:bcrypt_elixir, "~> 3.3"},
+      {:guardian, "~> 2.3"}
     ]
   end
 

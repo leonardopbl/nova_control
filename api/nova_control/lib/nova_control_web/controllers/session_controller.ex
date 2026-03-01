@@ -2,23 +2,29 @@ defmodule NovaControlWeb.SessionController do
   use NovaControlWeb, :controller
 
   alias Ecto.Changeset
-  alias NovaControl.LoginParams
-  alias NovaControl.Auth
+  alias NovaControl.Accounts
+  alias NovaControl.Auth.{LoginParams, Guardian}
 
   def login(conn, params) do
     case LoginParams.changeset(params)
          |> Changeset.apply_action(:validate) do
       {:ok, data} ->
-        case Auth.auth(data.email, data.password) do
+        case Accounts.authenticate_user(data.email, data.password) do
           {:ok, user} ->
+            {:ok, token, _claims} = Guardian.encode_and_sign(user)
+
             conn
             |> put_status(:ok)
-            |> json(%{message: "Login successful", user: user})
+            |> json(%{
+              message: "Login successful",
+              user: user,
+              access_token: token
+            })
 
-          {:error, _code, message} ->
+          {:error, :invalid_credentials} ->
             conn
             |> put_status(:unauthorized)
-            |> json(%{error: message})
+            |> json(%{error: "Invalid email or password"})
         end
 
       {:error, changeset} ->

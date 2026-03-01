@@ -55,3 +55,29 @@ Base local: `http://localhost:4000/api`
 ```bash
 mix test
 ```
+
+
+### Próximo passos
+- Implementar autenticação JWT
+  - adicionar geração de token no login [X]
+  - criar middleware para proteger rotas
+      - Criar camada web padrão para JSON:
+        user_json.ex
+        expense_json.ex
+        session_json.ex se quiser
+        changeset_json.ex
+        fallback_controller.ex
+      - Estruturar autenticação Guardian:
+        lib/nova_control_web/auth_pipeline.ex
+        lib/nova_control_web/auth_error_handler.ex
+        pipelines :auth e :ensure_auth no router
+
+- Adicionar endpoints de categorias e relatórios
+- Adicionar testes de integração para endpoints
+    - Adicionar testes espelhando lib/:
+      test/nova_control/accounts_test.exs
+      test/nova_control/expenses_test.exs
+      test/nova_control_web/controllers/session_controller_test.exs
+      test/nova_control_web/controllers/auth_controller_test.exs
+- Melhorar validações e tratamento de erros
+- Configurar CI/CD para deploy automático
