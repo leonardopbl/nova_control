@@ -60,17 +60,17 @@ mix test
 ### Próximo passos
 - Implementar autenticação JWT
   - adicionar geração de token no login [X]
-  - criar middleware para proteger rotas [-]
-      - Criar camada web padrão para JSON:
+  - criar middleware para proteger rotas [X]
+      - Criar camada web padrão para JSON: [X]
         user_json.ex [X]
-        expense_json.ex
-        session_json.ex se quiser
-        changeset_json.ex 
+        expense_json.ex [X]
+        session_json.ex [X]
+        changeset_json.ex [X]
         fallback_controller.ex [X]
-      - Estruturar autenticação Guardian:
-        lib/nova_control_web/auth_pipeline.ex
-        lib/nova_control_web/auth_error_handler.ex
-        pipelines :auth e :ensure_auth no router
+      - Estruturar autenticação Guardian: [X]
+        lib/nova_control_web/auth_pipeline.ex [X]
+        lib/nova_control_web/auth_error_handler.ex [X]
+        pipelines :auth e :ensure_auth no router [X]
 
 - Adicionar endpoints de categorias e relatórios
 - Adicionar testes de integração para endpoints

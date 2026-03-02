@@ -3,8 +3,8 @@ defmodule NovaControl.Auth.Guardian do
 
   alias NovaControl.Accounts
 
-  def subject_for_token(%{id: id}, _claims) do
-    sub = to_string(id)
+  def subject_for_token(user, _claims) do
+    sub = to_string(user.id)
     {:ok, sub}
   end
 

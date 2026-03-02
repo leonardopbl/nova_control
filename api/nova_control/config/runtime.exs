@@ -20,6 +20,15 @@ if System.get_env("PHX_SERVER") do
   config :nova_control, NovaControlWeb.Endpoint, server: true
 end
 
+guardian_secret =
+  if config_env() == :prod do
+    System.fetch_env!("GUARDIAN_SECRET_KEY")
+  else
+    System.get_env("GUARDIAN_SECRET_KEY") || "dev-only-secret"
+  end
+
+config :nova_control, NovaControl.Auth.Guardian, secret_key: guardian_secret
+
 config :nova_control, NovaControlWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 

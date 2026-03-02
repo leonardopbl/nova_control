@@ -41,9 +41,7 @@ config :phoenix, :json_library, Jason
 
 config :bcrypt_elixir, log_rounds: 12
 
-config :nova_control, NovaControl.Auth.Guardian,
-  issuer: "nova_control",
-  secret_key: "RArqnssKhniw4VdzyUFTq0dQ3xqaujTZQL21PF6THNwbzxNxZM3N2vRYo1lY24_L"
+config :nova_control, NovaControl.Auth.Guardian, issuer: "nova_control"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

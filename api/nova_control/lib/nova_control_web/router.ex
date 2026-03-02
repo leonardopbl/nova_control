@@ -5,6 +5,14 @@ defmodule NovaControlWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :auth do
+    plug(NovaControlWeb.Auth.AccessPipeline)
+  end
+
+  pipeline :require_auth do
+    plug(Guardian.Plug.EnsureAuthenticated)
+  end
+
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:nova_control, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
@@ -19,13 +27,13 @@ defmodule NovaControlWeb.Router do
 
       live_dashboard("/dashboard", metrics: NovaControlWeb.Telemetry)
       forward("/mailbox", Plug.Swoosh.MailboxPreview)
+
+      get("/status", NovaControlWeb.StatusController, :index)
     end
   end
 
   scope "/api", NovaControlWeb do
-    pipe_through(:api)
-
-    get("/status", StatusController, :index)
+    pipe_through([:api, :auth, :require_auth])
 
     get("/users", UsersController, :index)
     put("/users/:id", UsersController, :update)
