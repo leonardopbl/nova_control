@@ -78,9 +78,11 @@ defmodule NovaControl.Accounts do
 
       register ->
         if Bcrypt.verify_pass(password, register.password_hash) do
-          case get_user(register.user_id) do
+          with {:ok, _register} <- update_last_login(register),
+               %User{} = user <- get_user(register.user_id) do
+            {:ok, user}
+          else
             nil -> {:error, :invalid_credentials}
-            user -> {:ok, user}
           end
         else
           {:error, :invalid_credentials}
@@ -90,5 +92,15 @@ defmodule NovaControl.Accounts do
 
   defp get_register_by_email(email) do
     Repo.get_by(Register, email: email, provider: "password")
+  end
+
+  defp update_last_login(register) do
+    register
+    |> Ecto.Changeset.change(
+      last_login_at:
+        DateTime.utc_now()
+        |> DateTime.truncate(:second)
+    )
+    |> Repo.update()
   end
 end

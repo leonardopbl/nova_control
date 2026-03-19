@@ -58,7 +58,7 @@ mix test
 
 
 ### Próximo passos
-- Implementar autenticação JWT
+- Implementar autenticação JWT [X]
   - adicionar geração de token no login [X]
   - criar middleware para proteger rotas [X]
       - Criar camada web padrão para JSON: [X]
@@ -72,7 +72,6 @@ mix test
         lib/nova_control_web/auth_error_handler.ex [X]
         pipelines :auth e :ensure_auth no router [X]
 
-- Adicionar endpoints de categorias e relatórios
 - Adicionar testes de integração para endpoints
     - Adicionar testes espelhando lib/:
       test/nova_control/accounts_test.exs
@@ -80,4 +79,5 @@ mix test
       test/nova_control_web/controllers/session_controller_test.exs
       test/nova_control_web/controllers/auth_controller_test.exs
 - Melhorar validações e tratamento de erros
+- Adicionar endpoints de categorias e relatórios
 - Configurar CI/CD para deploy automático

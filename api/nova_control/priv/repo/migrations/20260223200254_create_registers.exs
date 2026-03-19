@@ -7,8 +7,8 @@ defmodule NovaControl.Repo.Migrations.CreateRegister do
       add(:password_hash, :string)
       add(:provider, :string)
       add(:provider_user_id, :string)
-      add(:last_login_at, :date)
-      add(:confirmed_at, :date)
+      add(:last_login_at, :utc_datetime)
+      add(:confirmed_at, :utc_datetime)
       add(:user_id, references(:users, on_delete: :delete_all), null: false)
 
       timestamps()

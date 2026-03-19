@@ -1,7 +1,7 @@
 defmodule NovaControlWeb.SessionJSON do
   def show(%{user: user, access_token: token}) do
     %{
-      message: "Login successfull",
+      message: "Login successful",
       user: %{
         id: user.id,
         name: user.name,

@@ -5,7 +5,6 @@ defmodule NovaControl.Accounts.Register do
   @fields [
     :user_id,
     :email,
-    :password_hash,
     :provider,
     :provider_user_id,
     :last_login_at,
@@ -32,8 +31,8 @@ defmodule NovaControl.Accounts.Register do
     field(:password_hash, :string)
     field(:provider, :string)
     field(:provider_user_id, :string)
-    field(:last_login_at, :date)
-    field(:confirmed_at, :date)
+    field(:last_login_at, :utc_datetime)
+    field(:confirmed_at, :utc_datetime)
 
     belongs_to(:user, NovaControl.Accounts.User)
 
@@ -46,8 +45,9 @@ defmodule NovaControl.Accounts.Register do
     |> validate_required(@required_fields)
     |> validate_length(:password, min: 8, max: 72)
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/)
-    |> foreign_key_constraint(:user_id)
     |> put_password_hash()
+    |> validate_required([:password_hash])
+    |> foreign_key_constraint(:user_id)
   end
 
   defp put_password_hash(changeset) do
